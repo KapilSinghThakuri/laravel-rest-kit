@@ -1,0 +1,26 @@
+{
+  "name": "kapilsinghthakuri/rest-kit",
+  "description": "Reusable REST API toolkit for Laravel projects, providing standardized responses, exception handling, validation, pagination, authentication helpers, versioning, and API best practices out-of-the-box.",
+  "type": "library",
+  "require": {
+    "php": "^8.2",
+    "illuminate/support": "^12.44",
+    "illuminate/http": "^12.44"
+  },
+  "require-dev": {
+    "phpstan/phpstan": "^2.1"
+  },
+  "license": "proprietary",
+  "autoload": {
+    "psr-4": {
+      "Kapilsinghthakuri\\RestKit\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Kapil Thakuri",
+      "email": "kapilsinghthakuri33@gmail.com"
+    }
+  ],
+  "minimum-stability": "stable"
+}
