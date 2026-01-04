@@ -1,7 +1,5 @@
 <?php
 
-namespace Kapilsinghthakuri\RestKit\Config;
-
 return [
     'force_json' => true,
 

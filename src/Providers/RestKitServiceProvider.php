@@ -10,7 +10,7 @@ class RestKitServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->mergeConfigFrom(
-            __DIR__ . '/../../config/rest-kit.php',
+            __DIR__ . '/../config/rest-kit.php',
             'rest-kit'
         );
     }
@@ -18,7 +18,7 @@ class RestKitServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->publishes([
-            __DIR__ . '/../../config/rest-kit.php' => config_path('rest-kit.php'),
+            __DIR__ . '/../config/rest-kit.php' => config_path('rest-kit.php'),
         ], 'rest-kit-config');
     }
 }
