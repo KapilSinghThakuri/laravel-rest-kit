@@ -22,5 +22,12 @@
       "email": "kapilsinghthakuri33@gmail.com"
     }
   ],
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Kapilsinghthakuri\\RestKit\\Providers\\RestKitServiceProvider"
+      ]
+    }
+  },
   "minimum-stability": "stable"
 }

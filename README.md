@@ -1,3 +1,3 @@
 # laravel-rest-kit
 
-Initial API Core package skeleton
+Initial REST API Kit package skeleton
