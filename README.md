@@ -1,130 +1,127 @@
-# Laravel Rest Kit
+# RestKit (Laravel REST API Toolkit)
 
-**Laravel Rest Kit** is a reusable REST API toolkit for Laravel projects, providing standardized responses, exception handling, validation, pagination, authentication helpers, versioning, and API best practices out-of-the-box.
+RestKit is a reusable, framework-level REST API infrastructure package for Laravel.
+It provides standardized API responses, exception handling, request control, pagination, versioning, and other API best practices out-of-the-box.
 
-## Features
+> ⚠️ **Status:**  
+> RestKit is currently under active development.  
+> APIs may change until the first stable release (`v1.0.0`).
 
-- 🚀 **Standardized API Responses**: Consistent JSON structure for success and error responses.
-- 🛡️ **Exception Handling**: Custom exception classes that automatically render uniform error responses.
-- 🛠️ **Base API Controller**: A ready-to-use controller class with helper methods.
-- 🔌 **Middleware**: Utilities like `ForceJsonResponse` to ensure proper API header handling.
-- ⚙️ **Configurable**: extensive configuration for debugging, pagination defaults, and API versioning.
+---
 
-## Installation
+## ✨ What is RestKit?
 
-You can install the package via composer:
+RestKit is not a business-logic package.  
+It is an **API infrastructure layer** that gives your Laravel projects:
 
-```bash
-composer require kapilsinghthakuri/rest-kit
+- Standardized API responses
+- API-friendly exception handling
+- Request normalization
+- Pagination & metadata
+- Versioning support
+- Security & consistency
+
+This allows you to build APIs that behave the same way across all your projects.
+
+---
+
+## 📦 Installation (Development Version)
+
+Because RestKit is still in development, you must install it from GitHub.
+
+### 1. Add the repository to your Laravel project
+
+In your Laravel project’s `composer.json`:
+
+```json
+   "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/KapilSinghThakuri/laravel-rest-kit"
+        }
+    ]
 ```
 
-After installation, you can publish the configuration file:
+### 2. Require the package
+
+```bash
+    composer require kapilsinghthakuri/rest-kit:@dev
+```
+
+Composer will fetch the package from GitHub and install it into your project.
+
+### 3. Publishing Configuration
+
+RestKit ships with a default configuration file.
+
+To publish it into your Laravel project:
 
 ```bash
 php artisan vendor:publish --tag=rest-kit-config
 ```
 
-## Configuration
+This will create:
 
-The published config file `config/rest-kit.php` allows you to customize the behavior:
+config/rest-kit.php
 
-```php
-return [
-    // Force all requests to accept JSON
-    'force_json' => true,
+You can now customize how RestKit behaves for your project.
 
-    // Add debug information (timestamp, memory usage) to responses
-    'debug' => env('APP_DEBUG', false),
+### 4. Using RestKit
 
-    // Pagination settings
-    'pagination' => [
-        'default_per_page' => 15,
-        'max_per_page' => 100,
-    ],
+After installation, you can:
 
-    // Versioning settings
-    'versioning' => [
-        'enabled' => true,
-        'default' => 'v1',
-        'header' => 'X-API-Version',
-    ],
-];
-```
+Extend the base API controller
 
-## Usage
+Use standardized API responses
 
-### 1. Standardized Responses
+Read configuration via the RestKit helper
 
-Use the `ApiResponse` class to return consistent JSON responses anywhere in your application.
+Example:
 
 ```php
 use Kapilsinghthakuri\RestKit\Responses\ApiResponse;
 
-// Success Response
-return ApiResponse::success($data, 'User created successfully', 201);
-
-// Error Response
-return ApiResponse::error('User not found', 404);
+return ApiResponse::success(['user' => $user]);
 ```
 
-**Response Structure:**
-
-```json
-{
-    "status": "success",
-    "message": "User created successfully",
-    "data": { ... }
-}
-```
-
-If debug mode is enabled, it appends a `debug` object with timestamp and memory usage.
-
-### 2. Base API Controller
-
-Extend the `ApiController` to gain access to helper methods `$this->success()` and `$this->error()`.
+Or inside a controller extending the package controller:
 
 ```php
-namespace App\Http\Controllers;
-
-use Kapilsinghthakuri\RestKit\Http\Controllers\ApiController;
-
-class UserController extends ApiController
-{
-    public function index()
-    {
-        $users = User::all();
-        return $this->success($users, 'Users retrieved successfully');
-    }
-
-    public function show($id)
-    {
-        $user = User::find($id);
-
-        if (!$user) {
-            return $this->error('User not found', 404);
-        }
-
-        return $this->success($user);
-    }
-}
+return $this->success($data, 'Data loaded');
 ```
 
-### 3. Exception Handling
+### 5. Updating RestKit
 
-Throw `ApiException` to automatically return a formatted error response.
+When new features or fixes are added to RestKit:
 
-```php
-use Kapilsinghthakuri\RestKit\Exceptions\ApiException;
-
-throw new ApiException('Invalid transaction', 400);
+```bash
+composer update kapilsinghthakuri/rest-kit
 ```
 
-### 4. Middleware
+This will pull the latest commits from the `main` branch.
 
-The `ForceJsonResponse` middleware ensures that incoming requests have the `Accept: application/json` header header set, which helps Laravel treat them as API requests (e.g., for validation errors).
+### 🚧 Development Status
 
-You can register it in your application's middleware stack (usually in `bootstrap/app.php` for Laravel 11 or `app/Http/Kernel.php` for older versions).
+RestKit is currently:
 
-## License
+Not versioned (pre-v1)
 
-Proprietary. Please check composer.json for more information.
+Subject to breaking changes
+
+Intended for early adopters and testing
+
+If you are using it in production, it is recommended to lock to a specific commit:
+
+```bash
+composer require kapilsinghthakuri/rest-kit:dev-main#<commit-hash>
+```
+
+### 🤝 Contributing
+
+RestKit is designed to grow as a professional API infrastructure layer.
+Contributions, feedback, and suggestions are welcome.
+
+### 🧑‍💻 Author
+
+Kapil Singh Thakuri
+GitHub: <https://github.com/KapilSinghThakuri>
