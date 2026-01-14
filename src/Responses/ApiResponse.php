@@ -12,11 +12,11 @@ class ApiResponse
     {
         $keys = RestKit::config('keys.success');
         $response = [
-            $keys['success']['root'] => true,
-            $keys['success']['message'] => $message,
-            $keys['success']['code'] => $status,
-            $keys['success']['data'] => $data,
-            $keys['success']['meta'] => $meta,
+            $keys['root'] => true,
+            $keys['message'] => $message,
+            $keys['code'] => $status,
+            $keys['data'] => $data,
+            $keys['meta'] => $meta,
         ];
 
         if (RestKit::config('debug', false)) {
@@ -33,11 +33,11 @@ class ApiResponse
     {
         $keys = RestKit::config('keys.error');
         $response = [
-            $keys['error']['root'] => false,
-            $keys['error']['message'] => $message,
-            $keys['error']['code'] => $status,
-            $keys['error']['errors'] => $errors,
-            $keys['error']['meta'] => $meta,
+            $keys['root'] => false,
+            $keys['message'] => $message,
+            $keys['code'] => $status,
+            $keys['errors'] => $errors,
+            $keys['meta'] => $meta,
         ];
 
         if (RestKit::config('debug', false)) {
