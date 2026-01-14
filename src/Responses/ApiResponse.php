@@ -4,15 +4,19 @@ namespace Kapilsinghthakuri\RestKit\Responses;
 
 use Illuminate\Http\JsonResponse;
 use Kapilsinghthakuri\RestKit\RestKit;
+use Symfony\Component\HttpFoundation\Response;
 
 class ApiResponse
 {
-    public static function success($data = null, $message = 'Success!', int $status = 200): JsonResponse
+    public static function success(mixed $data = null, string $message = 'Success', int $status = Response::HTTP_OK, array $meta = [], array $headers = []): JsonResponse
     {
+        $keys = RestKit::config('keys.success');
         $response = [
-            'status'  => 'success',
-            'message' => $message,
-            'data'    => $data,
+            $keys['success']['root'] => true,
+            $keys['success']['message'] => $message,
+            $keys['success']['code'] => $status,
+            $keys['success']['data'] => $data,
+            $keys['success']['meta'] => $meta,
         ];
 
         if (RestKit::config('debug', false)) {
@@ -22,15 +26,18 @@ class ApiResponse
             ];
         }
 
-        return response()->json($response, $status);
+        return response()->json($response, $status, $headers);
     }
 
-    public static function error($message = 'Error!', int $status = 500, $errors = null): JsonResponse
+    public static function error(string $message = 'Error', int $status = Response::HTTP_INTERNAL_SERVER_ERROR, ?array $errors = null, array $meta = [], array $headers = []): JsonResponse
     {
+        $keys = RestKit::config('keys.error');
         $response = [
-            'status'  => 'error',
-            'message' => $message,
-            'errors'  => $errors,
+            $keys['error']['root'] => false,
+            $keys['error']['message'] => $message,
+            $keys['error']['code'] => $status,
+            $keys['error']['errors'] => $errors,
+            $keys['error']['meta'] => $meta,
         ];
 
         if (RestKit::config('debug', false)) {
@@ -40,6 +47,10 @@ class ApiResponse
             ];
         }
 
-        return response()->json($response, $status);
+        if (RestKit::config('include_trace', false) && app()->isLocal()) {
+            $response['trace'] = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+        }
+        
+        return response()->json($response, $status, $headers);
     }
 }
