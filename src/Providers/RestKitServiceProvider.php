@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Kapilsinghthakuri\RestKit\Providers;
 
 use Illuminate\Support\ServiceProvider;
@@ -9,7 +11,13 @@ use Illuminate\Contracts\Debug\ExceptionHandler as ExceptionHandlerContract;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Auth\Access\AuthorizationException;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Throwable;
 
 class RestKitServiceProvider extends ServiceProvider
 {
@@ -40,7 +48,15 @@ class RestKitServiceProvider extends ServiceProvider
 
             // AuthenticationException -> 401
             $handler->renderable(function (AuthenticationException $e, $request) {
-                return ApiResponse::error('Unauthenticated', Response::HTTP_UNAUTHORIZED, null);
+                return ApiResponse::error($e->getMessage() ?: 'Unauthenticated', Response::HTTP_UNAUTHORIZED, null);
+            });
+
+            // AuthorizationException -> 403
+            $handler->renderable(function (AuthorizationException $e, $request) {
+                return ApiResponse::error(
+                    $e->getMessage() ?: 'This action is forbidden',
+                    Response::HTTP_FORBIDDEN
+                );
             });
 
             // ModelNotFound -> 404
@@ -48,6 +64,41 @@ class RestKitServiceProvider extends ServiceProvider
                 return ApiResponse::error('Resource not found', Response::HTTP_NOT_FOUND, null);
             });
 
+
+            $handler->renderable(function (NotFoundHttpException $e, $request) {
+                return ApiResponse::error(
+                    'API endpoint not found',
+                    Response::HTTP_NOT_FOUND
+                );
+            });
+
+            $handler->renderable(function (MethodNotAllowedHttpException $e, $request) {
+                return ApiResponse::error(
+                    'HTTP method not allowed',
+                    Response::HTTP_METHOD_NOT_ALLOWED
+                );
+            });
+
+            $handler->renderable(function (ThrottleRequestsException $e, $request) {
+                return ApiResponse::error(
+                    'Too many requests. Please try again later.',
+                    Response::HTTP_TOO_MANY_REQUESTS
+                );
+            });
+
+            $handler->renderable(function (HttpExceptionInterface $e, $request) {
+                return ApiResponse::error(
+                    $e->getMessage() ?: 'HTTP error',
+                    $e->getStatusCode()
+                );
+            });
+
+            $handler->renderable(function (Throwable $e, $request) {
+                return ApiResponse::error(
+                    'Internal server error',
+                    Response::HTTP_INTERNAL_SERVER_ERROR
+                );
+            });
         });
     }
 }

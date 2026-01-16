@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Kapilsinghthakuri\RestKit\Exceptions;
 
 use Illuminate\Contracts\Support\Responsable;
@@ -16,9 +18,11 @@ class ApiException extends \RuntimeException implements Responsable
     public function __construct(string $message = '', ?int $status = null, ?array $errors = null, ?Throwable $previous = null)
     {
         parent::__construct($message, 0, $previous);
-        if ($status !== null) $this->status = $status;
+        if ($status !== null) {
+            $this->status = $status;
+        }
         $this->errors = $errors;
-    }   
+    }
 
     public function toResponse($request): JsonResponse
     {

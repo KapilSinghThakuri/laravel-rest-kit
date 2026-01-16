@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Kapilsinghthakuri\RestKit\Responses;
 
 use Illuminate\Http\JsonResponse;
@@ -50,7 +52,7 @@ class ApiResponse
         if (RestKit::config('include_trace', false) && app()->isLocal()) {
             $response['trace'] = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
         }
-        
+
         return response()->json($response, $status, $headers);
     }
 }

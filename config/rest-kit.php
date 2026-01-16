@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
     /*
     |--------------------------------------------------------------------------
@@ -10,18 +12,18 @@ return [
     */
     "keys" => [
         'success' => [
-            'root'    => 'success',   
-            'message' => 'message',   
-            'code'    => 'status',      
-            'data'    => 'data',      
-            'meta'    => 'meta',      
+            'root'    => 'success',
+            'message' => 'message',
+            'code'    => 'status',
+            'data'    => 'data',
+            'meta'    => 'meta',
         ],
          'error' => [
-            'root'    => 'success',  
-            'message' => 'message',  
-            'code'    => 'status',      
-            'errors'  => 'errors',    
-            'meta'    => 'meta',    
+            'root'    => 'success',
+            'message' => 'message',
+            'code'    => 'status',
+            'errors'  => 'errors',
+            'meta'    => 'meta',
         ],
     ],
 
