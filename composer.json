@@ -2,6 +2,9 @@
   "name": "kapilsinghthakuri/rest-kit",
   "description": "Reusable REST API toolkit for Laravel projects, providing standardized responses, exception handling, validation, pagination, authentication helpers, versioning, and API best practices out-of-the-box.",
   "type": "library",
+  "scripts": {
+    "lint": "./vendor/bin/pint"
+  },
   "require": {
     "php": "^8.2",
     "illuminate/support": "^12.44",

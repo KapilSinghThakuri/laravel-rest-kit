@@ -31,8 +31,6 @@ return [
 
     'debug' => env('APP_DEBUG', false),
 
-    'include_trace' => env('REST_KIT_INCLUDE_TRACE', false),
-
     'pagination' => [
         'default_per_page' => 15,
         'max_per_page' => 100,
