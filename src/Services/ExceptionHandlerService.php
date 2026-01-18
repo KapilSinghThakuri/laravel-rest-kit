@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Kapilsinghthakuri\RestKit\Services;
 
+use Closure;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Kapilsinghthakuri\RestKit\Contracts\ExceptionHandlerInterface;
 use Kapilsinghthakuri\RestKit\Exceptions\ApiException;
@@ -23,6 +25,84 @@ use Throwable;
 
 class ExceptionHandlerService implements ExceptionHandlerInterface
 {
+    protected JsonRenderingService $jsonRenderingService;
+
+    public function __construct(JsonRenderingService $jsonRenderingService)
+    {
+        $this->jsonRenderingService = $jsonRenderingService;
+    }
+
+    /**
+     * Create a gated handler - wraps handler with JSON check
+     *
+     * This is the decorator that adds gate logic to any handler
+     */
+    protected function gatedHandler(Closure $handler): Closure
+    {
+        return function (Throwable $e, Request $request) use ($handler) {
+            if (! $this->jsonRenderingService->shouldRenderJson($request, $e)) {
+                return null;
+            }
+
+            return $handler($e, $request);
+        };
+    }
+
+    /**
+     * Register all exception handlers with automatic gating
+     */
+    public function register($handler): void
+    {
+
+        $handler->renderable(
+            $this->gatedHandler(fn ($e, $req) => $this->handleApiException($e, $req)),
+        );
+
+        $handler->renderable(
+            $this->gatedHandler(fn ($e, $req) => $this->handleValidationException($e, $req)),
+        );
+
+        $handler->renderable(
+            $this->gatedHandler(fn ($e, $req) => $this->handleAuthenticationException($e, $req)),
+        );
+
+        $handler->renderable(
+            $this->gatedHandler(fn ($e, $req) => $this->handleAuthorizationException($e, $req)),
+        );
+
+        $handler->renderable(
+            $this->gatedHandler(fn ($e, $req) => $this->handleModelNotFoundException($e, $req)),
+        );
+
+        $handler->renderable(
+            $this->gatedHandler(fn ($e, $req) => $this->handleNotFoundHttpException($e, $req)),
+        );
+
+        $handler->renderable(
+            $this->gatedHandler(fn ($e, $req) => $this->handleMethodNotAllowedException($e, $req)),
+        );
+
+        $handler->renderable(
+            $this->gatedHandler(fn ($e, $req) => $this->handleThrottleRequestsException($e, $req)),
+        );
+
+        $handler->renderable(
+            $this->gatedHandler(fn ($e, $req) => $this->handleHttpException($e, $req)),
+        );
+
+        $handler->renderable(
+            $this->gatedHandler(fn ($e, $req) => $this->handleQueryException($e, $req)),
+        );
+
+        $handler->renderable(
+            $this->gatedHandler(fn ($e, $req) => $this->handlePdoException($e, $req)),
+        );
+
+        $handler->renderable(
+            $this->gatedHandler(fn ($e, $req) => $this->handleGenericException($e, $req)),
+        );
+    }
+
     /**
      * Handle API exceptions
      */
@@ -226,66 +306,66 @@ class ExceptionHandlerService implements ExceptionHandlerInterface
     /**
      * Register all exception handlers
      */
-    public function register($handler): void
-    {
-        // API Exception
-        $handler->renderable(
-            fn (ApiException $e, $request) => $this->handleApiException($e, $request),
-        );
+    // public function register($handler): void
+    // {
+    //     // API Exception
+    //     $handler->renderable(
+    //         fn (ApiException $e, $request) => $this->handleApiException($e, $request),
+    //     );
 
-        // Validation Exception
-        $handler->renderable(
-            fn (ValidationException $e, $request) => $this->handleValidationException($e, $request),
-        );
+    //     // Validation Exception
+    //     $handler->renderable(
+    //         fn (ValidationException $e, $request) => $this->handleValidationException($e, $request),
+    //     );
 
-        // Authentication Exception
-        $handler->renderable(
-            fn (AuthenticationException $e, $request) => $this->handleAuthenticationException($e, $request),
-        );
+    //     // Authentication Exception
+    //     $handler->renderable(
+    //         fn (AuthenticationException $e, $request) => $this->handleAuthenticationException($e, $request),
+    //     );
 
-        // Authorization Exception
-        $handler->renderable(
-            fn (AuthorizationException $e, $request) => $this->handleAuthorizationException($e, $request),
-        );
+    //     // Authorization Exception
+    //     $handler->renderable(
+    //         fn (AuthorizationException $e, $request) => $this->handleAuthorizationException($e, $request),
+    //     );
 
-        // Model Not Found Exception
-        $handler->renderable(
-            fn (ModelNotFoundException $e, $request) => $this->handleModelNotFoundException($e, $request),
-        );
+    //     // Model Not Found Exception
+    //     $handler->renderable(
+    //         fn (ModelNotFoundException $e, $request) => $this->handleModelNotFoundException($e, $request),
+    //     );
 
-        // Not Found HTTP Exception
-        $handler->renderable(
-            fn (NotFoundHttpException $e, $request) => $this->handleNotFoundHttpException($e, $request),
-        );
+    //     // Not Found HTTP Exception
+    //     $handler->renderable(
+    //         fn (NotFoundHttpException $e, $request) => $this->handleNotFoundHttpException($e, $request),
+    //     );
 
-        // Method Not Allowed Exception
-        $handler->renderable(
-            fn (MethodNotAllowedHttpException $e, $request) => $this->handleMethodNotAllowedException($e, $request),
-        );
+    //     // Method Not Allowed Exception
+    //     $handler->renderable(
+    //         fn (MethodNotAllowedHttpException $e, $request) => $this->handleMethodNotAllowedException($e, $request),
+    //     );
 
-        // Throttle Requests Exception
-        $handler->renderable(
-            fn (ThrottleRequestsException $e, $request) => $this->handleThrottleRequestsException($e, $request),
-        );
+    //     // Throttle Requests Exception
+    //     $handler->renderable(
+    //         fn (ThrottleRequestsException $e, $request) => $this->handleThrottleRequestsException($e, $request),
+    //     );
 
-        // HTTP Exception
-        $handler->renderable(
-            fn (HttpExceptionInterface $e, $request) => $this->handleHttpException($e, $request),
-        );
+    //     // HTTP Exception
+    //     $handler->renderable(
+    //         fn (HttpExceptionInterface $e, $request) => $this->handleHttpException($e, $request),
+    //     );
 
-        // Query Exception
-        $handler->renderable(
-            fn (QueryException $e, $request) => $this->handleQueryException($e, $request),
-        );
+    //     // Query Exception
+    //     $handler->renderable(
+    //         fn (QueryException $e, $request) => $this->handleQueryException($e, $request),
+    //     );
 
-        // PDO Exception
-        $handler->renderable(
-            fn (PDOException $e, $request) => $this->handlePdoException($e, $request),
-        );
+    //     // PDO Exception
+    //     $handler->renderable(
+    //         fn (PDOException $e, $request) => $this->handlePdoException($e, $request),
+    //     );
 
-        // Generic Exception (catch-all)
-        $handler->renderable(
-            fn (Throwable $e, $request) => $this->handleGenericException($e, $request),
-        );
-    }
+    //     // Generic Exception (catch-all)
+    //     $handler->renderable(
+    //         fn (Throwable $e, $request) => $this->handleGenericException($e, $request),
+    //     );
+    // }
 }

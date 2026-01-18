@@ -37,6 +37,37 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | JSON Rendering Configuration
+    |--------------------------------------------------------------------------
+    | Configure when exceptions should be rendered as JSON
+    */
+    'json_rendering' => [
+        // API route prefixes
+        'api_prefixes' => [
+            'api',
+            'api/v1',
+            'api/v2',
+        ],
+
+        // Wildcard patterns
+        'patterns' => [
+            // Example: All routes starting with 'api'
+            // 'api*',
+            // 'admin/api*',
+        ],
+
+        // Custom conditions (callables)
+        'conditions' => [
+            // Example: Force JSON if special header present
+            // fn($request) => $request->hasHeader('X-Api-Request'),
+        ],
+
+        // Force JSON for AJAX requests
+        'force_ajax' => true,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Debug Mode
     |--------------------------------------------------------------------------
     | When enabled, includes additional debug information in error responses.
