@@ -14,8 +14,7 @@
       "elements": ["arguments", "arrays", "match", "parameters"]
     },
     "function_declaration": {
-      "closure_fn_spacing": "one",
-      "fn_newline": true
+      "closure_fn_spacing": "one"
     },
     "return_type_declaration": {
       "space_before": "none"

@@ -11,12 +11,15 @@ use Throwable;
 
 class ApiResponse
 {
+    /**
+     * Success response
+     */
     public static function success(
         mixed $data = null,
         string $message = 'Success',
         int $status = Response::HTTP_OK,
         array $meta = [],
-        array $headers = []
+        array $headers = [],
     ): JsonResponse {
         $keys = RestKit::config('keys.success');
         $response = [
@@ -30,20 +33,45 @@ class ApiResponse
         if (RestKit::config('debug', false)) {
             $response['debug'] = [
                 'timestamp' => now(),
-                'memory' => memory_get_usage()
+                'memory' => memory_get_usage(),
             ];
         }
 
         return response()->json($response, $status, $headers);
     }
 
+    /**
+     * Paginated success response
+     */
+    public static function paginated(
+        $data,
+        string $message = 'Success',
+        int $statusCode = Response::HTTP_OK,
+        array $additionalMeta = [],
+    ): JsonResponse {
+        $meta = array_merge([
+            'pagination' => [
+                'total' => $data->total(),
+                'count' => $data->count(),
+                'per_page' => $data->perPage(),
+                'current_page' => $data->currentPage(),
+                'total_pages' => $data->lastPage(),
+            ],
+        ], $additionalMeta);
+
+        return self::success($data->items(), $message, $statusCode, $meta);
+    }
+
+    /**
+     * Error response
+     */
     public static function error(
         string $message = 'Error',
         int $status = Response::HTTP_INTERNAL_SERVER_ERROR,
         ?array $errors = null,
         ?Throwable $exception = null,
         array $meta = [],
-        array $headers = []
+        array $headers = [],
     ): JsonResponse {
         $keys = RestKit::config('keys.error');
         $response = [

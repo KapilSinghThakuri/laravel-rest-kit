@@ -6,13 +6,14 @@ namespace Kapilsinghthakuri\RestKit\Exceptions;
 
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\JsonResponse;
-use Throwable;
 use Kapilsinghthakuri\RestKit\Responses\ApiResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 class ApiException extends \RuntimeException implements Responsable
 {
     protected int $status = Response::HTTP_INTERNAL_SERVER_ERROR;
+
     protected ?array $errors = null;
 
     public function __construct(string $message = '', ?int $status = null, ?array $errors = null, ?Throwable $previous = null)
